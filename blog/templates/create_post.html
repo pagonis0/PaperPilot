@@ -1,0 +1,184 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="content-section">
+    <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+
+            <div class="form-group">
+                <label class="form-check-label">
+                    Choose one: Do you have a valid DOI or arXiv number to automatically fill the form?
+                </label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="doi_or_arxiv" id="doiRadio" value="doi" checked onchange="toggleFields()">
+                    <label class="form-check-label" for="doiRadio">DOI</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="doi_or_arxiv" id="arxivRadio" value="arxiv" onchange="toggleFields()">
+                    <label class="form-check-label" for="arxivRadio">arXiv</label>
+                </div>
+
+                <div class="form-group" id="doiFields">
+                    <label class="form-control-label" for="doi">DOI</label>
+                    <input class="form-control form-control-lg" id="doi" name="doi" type="text" value="">
+                </div>
+
+                <div class="form-group" id="arxivFields" style="display: none;">
+                    <label class="form-control-label" for="arxiv">arXiv</label>
+                    <input class="form-control form-control-lg" id="arxiv" name="arxiv" type="text" value="">
+                </div>
+                <button type="button" class="btn btn-outline-info" onclick="fetchBibData()">Fetch Data</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-control-label" for="title">Title</label>
+                <input class="form-control form-control-lg" id="title" name="title" required type="text" value="">
+            </div>
+
+            <div class="form-group">
+                {{ form.author.label(class="form-control-label") }}
+                {{ form.author(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.year.label(class="form-control-label") }}
+                {{ form.year(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.type.label(class="form-control-label") }}
+                {{ form.type(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.journal.label(class="form-control-label") }}
+                {{ form.journal(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.volume.label(class="form-control-label") }}
+                {{ form.volume(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.abstract.label(class="form-control-label") }}
+                {{ form.abstract(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.url.label(class="form-control-label") }}
+                {{ form.url(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.publisher.label(class="form-control-label") }}
+                {{ form.publisher(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.ranking.label(class="form-control-label") }}
+                {{ form.ranking(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.license.label(class="form-control-label") }}
+                {{ form.license(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.keywords.label(class="form-control-label") }}
+                {{ form.keywords(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.comments.label(class="form-control-label") }}
+                {{ form.comments(class="form-control form-control-lg") }}
+            </div>
+
+            <div class="form-group">
+                <input type="file" name="file" autocomplete="off">
+            </div>
+        </fieldset>
+
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleFields() {
+    var doiFields = document.getElementById("doiFields");
+    var arxivFields = document.getElementById("arxivFields");
+    var doiRadio = document.getElementById("doiRadio");
+    var arxivRadio = document.getElementById("arxivRadio");
+
+    if (doiRadio.checked) {
+        doiFields.style.display = "block";
+        arxivFields.style.display = "none";
+    } else if (arxivRadio.checked) {
+        doiFields.style.display = "none";
+        arxivFields.style.display = "block";
+    }
+}
+</script>
+{% if bibtex_data %}
+    <!-- Add this section to automatically fill out form fields with fetched data -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var bibtex_data = {{ bibtex_data|tojson|safe }};
+            if (bibtex_data) {
+                // Fill out form fields with fetched BibTeX data
+                document.getElementById("title").value = bibtex_data.title || '';
+                document.getElementById("journal").value = bibtex_data.booktitle || '';  // Assuming 'booktitle' corresponds to the journal field
+                document.getElementById("year").value = bibtex_data.year || '';
+                // Update other fields accordingly...
+            }
+        });
+    </script>
+{% endif %}
+<script>
+function fetchBibData() {
+    toggleFields(); // Make sure the correct fields are visible
+    var doi = document.getElementById("doi").value;
+    var arxiv = document.getElementById("arxiv").value;
+
+    // Check if either DOI or arXiv is provided
+    if (doi || arxiv) {
+        // Make an AJAX request to your Flask route to fetch BibTeX data
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    // Parse the JSON response
+                    var bibtex_data = JSON.parse(xhr.responseText);
+                    console.log(bibtex_data); // Log BibTeX data to the console
+
+                    // Fill out form fields with fetched BibTeX data
+                    document.getElementById("title").value = bibtex_data.title || '';
+                    document.getElementById("journal").value = bibtex_data.booktitle || '';
+                    document.getElementById("year").value = bibtex_data.year || '';
+                    document.getElementById("abstract").value = bibtex_data.abstract || '';
+                    document.getElementById("author").value = bibtex_data.author || '';
+                    document.getElementById("url").value = bibtex_data.url || '';
+                    document.getElementById("doi").value = bibtex_data.DOI || '';
+                    document.getElementById("publisher").value = bibtex_data.publisher || '';
+                    // Update other fields accordingly...
+                } else {
+                    console.error("Error fetching BibTeX data. Status:", xhr.status);
+                }
+            }
+        };
+
+        // Send the request to your Flask route for AJAX requests
+        xhr.open("POST", "/paper/new/ajax", true);  // Corrected URL
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({ doi: doi, arxiv: arxiv }));
+    } else {
+        alert("Please enter a valid DOI or arXiv number.");
+    }
+}
+</script>
+{% endblock content %}

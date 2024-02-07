@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+    <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+    {% if title %}
+        <title>PaperPilot - {{ title }}</title>
+    {% else %}
+        <title>PaperPilot</title>
+    {% endif %}
+    <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/favicon-16x16.png">
+    <link rel="manifest" href="static/site.webmanifest">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<body>
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
+        <div class="container">
+              <a class="navbar-brand mr-4" href="/">
+                    <img src="{{ url_for('static', filename='logo_new.svg') }}" alt="Logo" class="logo-img" height="40px">
+                </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link" href="/">Home</a>
+              <a class="nav-item nav-link" href="/papers">Papers</a>
+              <a class="nav-item nav-link" href="/prrs">Paper Reading Rounds</a>
+              <a class="nav-item nav-link" href="/faq">FAQ</a>
+            </div>
+            <ul class="navbar-nav d-flex flex-row me-1">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                  </svg>
+                  <i class="bi bi-person-fill"></i> My section
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  {% if current_user.is_authenticated %}
+                    <a class="dropdown-item" href="/favorites">My Favorites</a>
+                    <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+                  {% else %}
+                    <a class="dropdown-item" href="{{ url_for('login') }}">Login</a>
+                  {% endif %}
+                </div>
+              </li>
+            </ul>
+            <button id="dark-mode-toggle" class="btn btn-outline-light" onclick="toggleDarkMode()">
+                <i id="dark-mode-icon" class="fas fa-sun"></i> <!-- Initially showing sun icon -->
+            </button>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </main>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+    {% block scripts %}{% endblock %}
+    <div class="mb-5"></div>
+    <footer class="footer">
+      <div class="container">
+        <hr class="footer-divider mb-4">
+        <div class="row">
+          <div class="col-md-6">
+            <p class="small">&copy; 2024 PaperPilot. All rights reserved.
+            <br>
+            This work is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0 DEED</a>.
+            </p>
+          </div>
+          <div class="col-md-6 text-md-right">
+            <p class="small">Powered by <a href="https://www.thi.de/forschung/aimotion/researchaimotion/themenfelder/sprach-und-textverstehen/" target="_blank">Speech and Text Lab</a> @THI</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <script>
+function toggleDarkMode() {
+  const body = document.body;
+  body.classList.toggle("dark-mode");
+
+  // Save the user's preference in sessionStorage
+  const isDarkMode = body.classList.contains("dark-mode");
+  sessionStorage.setItem("darkMode", isDarkMode ? "true" : "false");
+
+  // Update button icon
+  const icon = document.getElementById("dark-mode-icon");
+  icon.classList.toggle("fa-sun", !isDarkMode);
+  icon.classList.toggle("fa-moon", isDarkMode);
+}
+
+// Apply dark mode on page load based on sessionStorage
+const isDarkMode = sessionStorage.getItem("darkMode") === "true";
+if (isDarkMode) {
+    document.body.classList.add("dark-mode");
+}
+
+</script>
+</body>
+</html>

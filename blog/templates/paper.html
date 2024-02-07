@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <h1>{{ paper.title }}</h1>
+    {% if current_user.is_authenticated %}
+        <form method="post" action="{{ url_for('toggle_favorite', paper_id=paper.id) }}" id="favoritesForm">
+            {{ form.hidden_tag() }}
+            <button type="submit" class="btn btn-outline-{{ 'secondary' if paper_in_favorites else 'warning' }} mt-1 mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star" viewBox="0 0 16 16">
+                    <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z"/>
+                </svg> {{ 'Remove from Favorites' if paper_in_favorites else 'My Favorites' }}
+            </button>
+        </form>
+    {% endif %}
+    {% if current_user.is_authenticated and current_user == paper.user %}
+        <div>
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_paper', paper_id=paper.id) }}">Update</a>
+            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
+          </div>
+    {% endif %}
+    <p>Author: {{ paper.author }}</p>
+    <p>Year: {{ paper.year }}</p>
+    <p>Abstract: {{ paper.abstract }}</p>
+    <p>Link to the paper: <a href="{{ paper.url }}" target="_blank">Click here</a></p>
+
+    <div id="accordion">
+      <div class="card">
+        <div class="card-header" id="headingOne">
+          <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Click here to see more information.
+            </button>
+          </h5>
+        </div>
+
+        <div id="collapseOne" class="collapse hide" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card-body">
+              {% if paper.journal != "" %}
+                <p>Journal: {{ paper.journal }}</p>
+              {% endif %}
+              {% if paper.volume != "" %}
+                <p>Volume: {{ paper.volume }}</p>
+              {% endif %}
+              {% if paper.arxiv != "" %}
+                <p>arXiv Number: {{ paper.arxiv }}</p>
+              {% endif %}
+              {% if paper.doi != "" %}
+                <p>DOI: {{ paper.doi }}</p>
+              {% endif %}
+              {% if paper.license != "" %}
+                <p>License: {{ paper.license }}</p>
+              {% endif %}
+              {% if paper.comments != "" %}
+                <p>Additional information: {{ paper.comments }}</p>
+              {% endif %}
+              <p>Uploader: {{ paper.user_id }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if paper.filename != None %}
+        <div>
+            <a class="btn btn-info btn-sm mt-1 mb-1" href="{{ url_for('download',
+            filename=paper.filename) }}">Download attachment</a>
+        </div>
+    {% endif %}
+    <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Do you really want to delete this paper and all connected Paper Reading Rounds?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form action="{{ url_for('delete_paper', paper_id=paper.id) }}" method="POST">
+            <input class="btn btn-danger" type="submit" value="Delete">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

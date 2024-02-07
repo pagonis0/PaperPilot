@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Paper list</h2>
+<div>
+    <a href="/paper/new" class="btn btn-primary btn-rounded">Add Paper</a>
+</div>
+<div class="mb-5"></div>
+<style>
+  thead input {
+        width: 100%;
+    }
+</style>
+
+<div style="position:relative;width:1100px" class="tablecontainer">
+    <div style="float:left">
+      <table id="data" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Abstract</th>
+            <th>Year</th>
+            <th>Publisher</th>
+        </tr>
+        </thead>
+
+            <tbody>
+            {% for paper in papers %}
+            <tr>
+                <td><a href="{{ url_for('paper', paper_id=paper.id) }}">{{ paper.title }}</a></td>
+                <td>
+                   <span data-toggle="modal" id="descid{{paper.author.index}}" data-target="#desc{{paper.author}}">{{ paper.author | truncate(50) }}</span>
+                </td>
+
+                <div class="modal fade" id="desc{{paper.author}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel2">Author(s) of {{ paper.title | truncate(50) }}:</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        {{paper.author}}
+                      </div>
+                    </div>
+                  </div>
+                </div></td>
+
+                <td>
+                   <span data-toggle="modal" id="descid{{paper.abstract.index}}" data-target="#desc{{paper.abstract}}">Click to reveal abstract</span>
+                </td>
+
+                <div class="modal fade" id="desc{{paper.abstract}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel1">Abstract of {{ paper.title | truncate(50) }}:</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        {{paper.abstract}}
+                      </div>
+                    </div>
+                  </div>
+                </div></td>
+                <td>{{ paper.year }}</td>
+                <td>{{ paper.publisher }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+      </table>
+    </div>
+</div>
+{% endblock content %}
+{% block scripts %}
+  <script>
+$(document).ready(function () {
+    // Setup - add a text input to each footer cell
+    $('#data thead tr')
+        .clone(true)
+        .addClass('filters')
+        .appendTo('#data thead');
+
+    var table = $('#data').DataTable({
+        orderCellsTop: true,
+        fixedHeader: true,
+        initComplete: function () {
+            var api = this.api();
+
+            // For each column
+            api.columns().eq(0).each(function (colIdx) {
+                // Set the header cell to contain the input element
+                var cell = $('.filters th').eq($(api.column(colIdx).header()).index());
+                var title = $(cell).text();
+
+                // Set the placeholder for the input
+                var placeholderText = 'Search ' + title.toLowerCase() + '...';
+                $(cell).html('<input type="text" class="rounded" placeholder="' + placeholderText + '" />'); // Added 'rounded' class
+
+                // On every keypress in this input
+                $('input', $('.filters th').eq($(api.column(colIdx).header()).index()))
+                    .off('keyup change')
+                    .on('change', function (e) {
+                        // Get the search value
+                        $(this).attr('title', $(this).val());
+                        var regexr = '({search})';
+
+                        var cursorPosition = this.selectionStart;
+                        // Search the column for that value
+                        api.column(colIdx)
+                            .search(
+                                this.value != ''
+                                    ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                    : '',
+                                this.value != '',
+                                this.value == ''
+                            )
+                            .draw();
+                    })
+                    .on('keyup', function (e) {
+                        e.stopPropagation();
+
+                        $(this).trigger('change');
+                        $(this)
+                            .focus()[0]
+                            .setSelectionRange(cursorPosition, cursorPosition);
+                    });
+            });
+        },
+    });
+});
+</script>
+
+{% endblock %}

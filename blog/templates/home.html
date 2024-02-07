@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="container">
+        {% if current_user.is_authenticated %}
+          <!-- Logged-in User Home Page -->
+          <h1>Welcome back to PaperPilot {{ current_user.username }}!</h1>
+
+          <!-- Upcoming Events Section -->
+          <div class="mt-4">
+            <h3>Upcoming Events:</h3>
+            {% if next_prr %}
+              <p>Next Paper Reading Round:</p>
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Room</th>
+                    <th>Presenter</th>
+                    <th>Paper</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                      <td>{{ next_prr.date.strftime('%d.%m.%Y') }}</td>
+                      <td>{{ next_prr.time.strftime('%H:%M') }}</td>
+                      <td>{{ next_prr.room }}</td>
+                      <td>{{ next_prr.presenter.username }}</td>
+                      <td><a href="{{ url_for('paper', paper_id=next_prr.paper.id) }}" >{{ next_prr.paper.title }}</a></td>
+                    </tr>
+                </tbody>
+              </table>
+
+            <a href="/prrs" class="btn btn-info">List of all Paper Reading Rounds</a>
+            {% else %}
+              <p>No upcoming Paper Reading Round events.</p>
+            <a href="/prrs" class="btn btn-info">List of all Paper Reading Rounds</a>
+            {% endif %}
+          </div>
+
+          <!-- Dashboard Overview Section -->
+          <div class="mt-4">
+            <h3>Dashboard Overview:</h3>
+            <p>Total Papers: {{ user_total_papers }}</p>
+            {% if latest_addition %}
+        <a href="{{ url_for('paper', paper_id=latest_addition.id) }}">Latest Addition: {{ latest_addition.title }}</a>
+    {% else %}
+        <p>No uploaded papers yet. Upload your first paper <a href="/paper/new">here</a></p>
+    {% endif %}
+          </div>
+
+          <!-- Quick Access Links Section -->
+          <div class="mt-4">
+            <h3>Quick Access:</h3>
+            <a href="/paper/new" class="btn btn-primary">Add Paper</a>
+            <a href="/papers" class="btn btn-secondary">View All Papers</a>
+          </div>
+
+          <!-- Recent Activity Section -->
+          <div class="mt-4">
+            <h3>Recent Activity:</h3>
+            <ul>
+              {% for activity in user_recent_activity %}
+                <li>{{ activity }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <!-- User-specific Content Section -->
+          <div class="mt-4">
+            <h3>Your Preferences:</h3>
+            <!-- Display user-specific content based on preferences -->
+          </div>
+
+        {% else %}
+          <!-- Non-Logged-In User Home Page -->
+          <h1>Welcome to PaperPilot</h1>
+          <h2>Your ultimate personal research assistant.</h2>
+
+          <!-- Key Features Section -->
+          <div class="mt-4">
+            <h3>Key Features:</h3>
+            <ul>
+              <li>Effortlessly manage and share your research papers.</li>
+              <li>Powerful search capabilities to find papers quickly.</li>
+              <li>Collaborate with fellow researchers seamlessly.</li>
+            </ul>
+            <!-- Upcoming Events Section -->
+          <div class="mt-4">
+            <h3>Upcoming Events:</h3>
+            {% if next_prr %}
+              <p>Next Paper Reading Round:</p>
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Presenter</th>
+                    <th>Paper</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                      <td>{{ next_prr.date.strftime('%d.%m.%Y') }}</td>
+                      <td>{{ next_prr.presenter.username }}</td>
+                      <td><a href="{{ url_for('paper', paper_id=next_prr.paper.id) }}">{{ next_prr.paper.title }}</a></td>
+                    </tr>
+                </tbody>
+              </table>
+            <a href="/prrs" class="btn btn-info">List of all Paper Reading Rounds</a>
+            {% else %}
+              <p>No upcoming Paper Reading Round events.</p>
+            <a href="/prrs" class="btn btn-info">List of all Paper Reading Rounds</a>
+            {% endif %}
+          </div>
+
+          <!-- Call to Action Section -->
+          <div class="mt-4">
+            <p>Log in to your account to start managing your papers.</p>
+            <a href="/login" class="btn btn-primary">Login</a>
+          </div>
+
+        {% endif %}
+  </div>
+{% endblock %}

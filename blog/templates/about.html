@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+  <div class="container">
+    <h1 class="display-4 text-center mb-5">Frequently Asked Questions (FAQ)</h1>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2>General Information</h2>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">1. What is PaperPilot?</h3>
+        <p class="card-text">PaperPilot is the ultimate reference management tool designed to help you effortlessly manage and share your research papers.</p>
+
+        <h3 class="card-title">2. How can I get started?</h3>
+        <p class="card-text">To get started, you do not need to do anything! In case you would like to add a paper
+          or present a Paper Reading Round (PRR) you will have to LogIn with your official THI credentianls.</p>
+
+        <h3 class="card-title">3. Can I use PaperPilot for collaboration?</h3>
+        <p class="card-text">Yes, PaperPilot provides powerful collaboration features (upcoming!). You can share papers with other researchers, participate in discussions, and stay updated on the latest research.</p>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2>Managing Papers</h2>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">4. How do I add a new paper?</h3>
+        <p class="card-text">To add a new paper, navigate to the "Add Paper" section and fill in the required information such as title, author, and publication details. One more hint, if you provide a valid DOI or arXiv number the information will be filled out automatically for you!</p>
+
+        <h3 class="card-title">5. Can I upload attachments with my papers?</h3>
+        <p class="card-text">Yes, you can upload attachments when adding or updating a paper. Supported file types include PDF, supplementary materials, and more.</p>
+
+        <h3 class="card-title">6. What is the process for updating or deleting a paper?</h3>
+        <p class="card-text">You can update or delete a paper by navigating to the respective options in the user dashboard. Make sure to confirm your actions, especially when deleting a paper, as it cannot be undone.</p>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2>Paper Reading Rounds (PRRs)</h2>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">7. What are Paper Reading Rounds (PRRs)?</h3>
+        <p class="card-text">PRRs are collaborative sessions where researchers present and discuss papers. It's a great way to exchange ideas, get feedback, and stay informed about the latest research in your field.</p>
+
+        <h3 class="card-title">8. How can I participate in a PRR?</h3>
+        <p class="card-text">To participate in a PRR, check the upcoming events section. If you find a PRR that interests you, you can join the session, contribute to the discussion, or even volunteer to present a paper.</p>
+
+        <!-- Add more PRR-related questions and answers -->
+      </div>
+    </div>
+
+    <!-- Add more sections and questions as needed -->
+
+    <div class="card mb-4 contact-section">
+      <div class="card-header">
+        <h2>Contact and Support</h2>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">9. How can I contact support?</h3>
+        <p class="card-text animated fadeIn">For support, please send an email to <a href="mailto:panos.pagonis@thi.de">panos.pagonis@thi.de</a>.</p>
+      </div>
+    </div>
+
+    <div class="card mb-4 report-bug-section">
+      <div class="card-header">
+        <h2>Report Bugs or Suggest Features</h2>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">10. Where can I report bugs or suggest features?</h3>
+        <p class="card-text animated fadeIn">To report bugs or suggest features, please visit our <a href="https://git.aimotion.thi.de/SpeechText_IN/project-reference-management-tool/-/issues" target="_blank">issue tracker</a> on GitLab.</p>
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}

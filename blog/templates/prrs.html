@@ -1,0 +1,72 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <h2>Paper Reading Rounds</h2>
+  <div>
+    <a href="/prr/new" class="btn btn-primary">New Paper Reading Round</a>
+  </div>
+  <div class="mb-5"></div>
+  <div>
+  <table id="prrsTable" class="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Room</th>
+        <th>Presenter</th>
+        <th>Paper</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for prr in prrs %}
+        <tr>
+          <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ prr.date.strftime('%d.%m.%Y') }}</td>
+          <td>{{ prr.time.strftime('%H:%M') }}</td>
+          <td>{{ prr.room }}</td>
+          <td>{{ prr.presenter.username }}</td>
+          <td><a href="{{ url_for('paper', paper_id=prr.paper.id) }}">{{ prr.paper.title }}</a></td>
+          <td>
+            {% if prr.presenter == current_user %}
+            <div>
+              <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal{{ prr.id }}">Delete</button>
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+
+        <!-- Modal for each PRR -->
+        <div class="modal fade" id="deleteModal{{ prr.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Do you really want to delete this PRR?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="{{ url_for('delete_prr', prr_id=prr.id) }}" method="POST">
+                  <input class="btn btn-danger" type="submit" value="Delete">
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  <!-- Add jQuery and DataTables scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+  <script>
+    // Initialize DataTable with search functionality
+    $(document).ready(function() {
+      $('#prrsTable').DataTable();
+    });
+  </script>
+{% endblock %}
